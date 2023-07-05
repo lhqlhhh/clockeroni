@@ -1,0 +1,78 @@
+var http = require("http")
+
+var app = http.createServer(function (req, resp) {
+    resp.writeHead(200, {"Content_Type":"text/html"});
+    resp.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clockeroni</title>
+</head>
+<body>
+    <h1>现在时间</h1>
+    <div id="current"></div>
+
+    <hr>
+    <h2>距离午饭(11:45)还有：</h2>
+    <div id="lunch"></div>
+    <hr>
+    <h2>距离下班还有：</h2>
+    <div id="offwork"></div>
+    <hr>
+    <div id="clock">
+        <script type="text/javascript">
+            window.onload =
+                function clockeroni() {
+                    var today = new Date(),
+                        year = today.getFullYear(),
+                        mon = today.getMonth() + 1,
+                        date = today.getDate(),
+                        day = today.getDay();
+                    if (day == 6 || day == 7) {
+                        document.getElementById("clock").innerHTML = "睡大觉吧你！"
+                        return
+                    }
+                    var lunchtemp = mon + " " + date + " " + year + " 11:45:00"
+                    var lunch = new Date(lunchtemp)
+
+                    var lunchdiff = lunch.getTime() - today.getTime(),
+                        lunchDay = parseInt(lunchdiff/(60*60*24*1000)),
+                        minuslDay = parseInt(lunchdiff) - parseInt(lunchDay*60*60*24*1000),
+                        lunchHour = parseInt(minuslDay/(60*60*1000)),
+                        minuslHour = minuslDay - lunchHour*60*60*1000,
+                        lunchMin = parseInt(minuslHour/(60*1000)),
+                        minuslMin = minuslHour - lunchMin*60*1000,
+                        lunchSec = parseInt(minuslMin/1000);
+                    if (lunchdiff < 0) {
+                        document.getElementById("lunch").innerHTML = "该午休了"
+                    } else {
+                        document.getElementById("lunch").innerHTML = (lunchDay+"天"+lunchHour+"小时"+lunchMin+"分"+lunchSec+"秒")
+                    }
+
+                    var offtemp = mon + " " + date + " " + year + " 17:30:00"
+                    var off = new Date(offtemp)
+                    var offdiff = off.getTime() - today.getTime(),
+                        offDay = parseInt(offdiff/(60*60*24*1000)),
+                        minusDay = parseInt(offdiff) - parseInt(offDay*60*60*24*1000),
+                        offHour = parseInt(minusDay/(60*60*1000)),
+                        minusHour = minusDay - offHour*60*60*1000,
+                        offMin = parseInt(minusHour/(60*1000)),
+                        minusMin = minusHour - offMin*60*1000,
+                        offSec = parseInt(minusMin/1000);
+                    if (offdiff < 0) {
+                        document.getElementById("offwork").innerHTML = "加班"
+                    } else {
+                        document.getElementById("offwork").innerHTML = (offDay+"天"+offHour+"小时"+offMin+"分"+offSec+"秒")
+                    }
+
+                    document.getElementById("current").innerHTML = today.toLocaleString()
+                    setInterval(clockeroni, 1000)
+                }
+        </script>
+    </div>
+</body>
+</html>`)
+    resp.end();
+})
+
+app.listen(1730)
